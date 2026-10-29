@@ -1,0 +1,29 @@
+groups:
+  - name: basic-alerts
+    rules:
+      - alert: InstanceDown
+        expr: up == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Instance {{ $labels.instance }} is down"
+          description: "{{ $labels.job }} target {{ $labels.instance }} has bee>
+
+      - alert: HighCPUUsage
+        expr: 100 - (avg by(instance)(rate(node_cpu_seconds_total{mode="idle"}[>
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High CPU on {{ $labels.instance }}"
+          description: "CPU usage is above 80% (current: {{ $value | printf \"%>
+          
+      - alert: DiskAlmostFull
+        expr: (node_filesystem_avail_bytes{mountpoint="/"} / node_filesystem_si>
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Disk almost full on {{ $labels.instance }}"
+          description: "Less than 10% free space on /."
